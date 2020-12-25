@@ -11,11 +11,15 @@ import (
 	"github.com/LFSCamargo/graphql-go-boilerplate/graph/model"
 )
 
-func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) (*model.Todo, error) {
+func (r *mutationResolver) Login(ctx context.Context, input *model.LoginInput) (*model.TokenOutput, error) {
 	panic(fmt.Errorf("not implemented"))
 }
 
-func (r *queryResolver) Todos(ctx context.Context) ([]*model.Todo, error) {
+func (r *mutationResolver) Register(ctx context.Context, input *model.Register) (*model.TokenOutput, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
+func (r *queryResolver) Me(ctx context.Context) (*model.User, error) {
 	panic(fmt.Errorf("not implemented"))
 }
 
