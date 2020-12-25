@@ -5,22 +5,35 @@ package graph
 
 import (
 	"context"
-	"fmt"
+	"errors"
 
+	"github.com/LFSCamargo/graphql-go-boilerplate/auth"
 	"github.com/LFSCamargo/graphql-go-boilerplate/graph/generated"
 	"github.com/LFSCamargo/graphql-go-boilerplate/graph/model"
+	"github.com/LFSCamargo/graphql-go-boilerplate/graph/services/user"
 )
 
 func (r *mutationResolver) Login(ctx context.Context, input *model.LoginInput) (*model.TokenOutput, error) {
-	panic(fmt.Errorf("not implemented"))
+	tokenOut, err := user.LoginUser(input)
+	return tokenOut, err
 }
 
-func (r *mutationResolver) Register(ctx context.Context, input *model.Register) (*model.TokenOutput, error) {
-	panic(fmt.Errorf("not implemented"))
+func (r *mutationResolver) Register(ctx context.Context, input *model.RegisterInput) (*model.TokenOutput, error) {
+	tokenOut, err := user.RegisterNewUser(input)
+	return tokenOut, err
 }
 
 func (r *queryResolver) Me(ctx context.Context) (*model.User, error) {
-	panic(fmt.Errorf("not implemented"))
+	user := auth.ForContext(ctx)
+	if user == nil {
+		return nil, errors.New("Not Logged")
+	}
+	return &model.User{
+		Email:    user.Email,
+		Username: user.Username,
+		Picture:  user.Picture,
+		ID:       user.ID.String(),
+	}, nil
 }
 
 // Mutation returns generated.MutationResolver implementation.
