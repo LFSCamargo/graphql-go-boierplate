@@ -11,10 +11,12 @@ import (
 // Connect - Is the function that connects to the mongoDB
 func Connect() {
 	mongouri := os.Getenv("MONGO_URI")
-	if mongouri == "" {
+	mongodatabase := os.Getenv("MONGO_DATABASE")
+	if mongouri == "" && mongodatabase == "" {
 		mongouri = "mongodb://localhost:27017"
+		mongodatabase = "boilerplate"
 	}
-	err := mgm.SetDefaultConfig(nil, "boilerplate", options.Client().ApplyURI(mongouri))
+	err := mgm.SetDefaultConfig(nil, mongodatabase, options.Client().ApplyURI(mongouri))
 	if err != nil {
 		log.Fatal(err)
 	}
