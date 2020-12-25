@@ -31,3 +31,9 @@ It will generate a model inside the file `graph/model/models_gen.go` folder and 
 
 1. The models should not be edited because they are generated based on the `graph/schema.graphqls`
 2. You can edit the `graph/schema.resolvers.go` but when you run the gql gen command will create resolvers but without any kind of logic inside
+
+# How to run the project
+
+1. Clone the repo
+2. Enter the project folder and run the following command to install the deps `go mod download`
+3. Run the `go run server.go` and you should be fine
