@@ -45,7 +45,7 @@ type DirectiveRoot struct {
 type ComplexityRoot struct {
 	Mutation struct {
 		Login    func(childComplexity int, input *model.LoginInput) int
-		Register func(childComplexity int, input *model.Register) int
+		Register func(childComplexity int, input *model.RegisterInput) int
 	}
 
 	Query struct {
@@ -59,7 +59,6 @@ type ComplexityRoot struct {
 	User struct {
 		Email    func(childComplexity int) int
 		ID       func(childComplexity int) int
-		Password func(childComplexity int) int
 		Picture  func(childComplexity int) int
 		Username func(childComplexity int) int
 	}
@@ -67,7 +66,7 @@ type ComplexityRoot struct {
 
 type MutationResolver interface {
 	Login(ctx context.Context, input *model.LoginInput) (*model.TokenOutput, error)
-	Register(ctx context.Context, input *model.Register) (*model.TokenOutput, error)
+	Register(ctx context.Context, input *model.RegisterInput) (*model.TokenOutput, error)
 }
 type QueryResolver interface {
 	Me(ctx context.Context) (*model.User, error)
@@ -110,7 +109,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.Register(childComplexity, args["input"].(*model.Register)), true
+		return e.complexity.Mutation.Register(childComplexity, args["input"].(*model.RegisterInput)), true
 
 	case "Query.me":
 		if e.complexity.Query.Me == nil {
@@ -139,13 +138,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.User.ID(childComplexity), true
-
-	case "User.password":
-		if e.complexity.User.Password == nil {
-			break
-		}
-
-		return e.complexity.User.Password(childComplexity), true
 
 	case "User.picture":
 		if e.complexity.User.Picture == nil {
@@ -230,27 +222,31 @@ var sources = []*ast.Source{
   username: String!
   email: String!
   picture: String!
-  password: String!
 }
-type Query {
-  me: User!
-}
-input Register {
+
+input RegisterInput {
   email: String!
   password: String!
   picture: String!
   username: String!
 }
+
 input LoginInput {
   email: String!
   password: String!
 }
+
 type TokenOutput {
   token: String!
 }
+
 type Mutation {
   login(input: LoginInput): TokenOutput
-  register(input: Register): TokenOutput
+  register(input: RegisterInput): TokenOutput
+}
+
+type Query {
+  me: User!
 }
 `, BuiltIn: false},
 }
@@ -278,10 +274,10 @@ func (ec *executionContext) field_Mutation_login_args(ctx context.Context, rawAr
 func (ec *executionContext) field_Mutation_register_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 *model.Register
+	var arg0 *model.RegisterInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalORegister2ᚖgithubᚗcomᚋLFSCamargoᚋgraphqlᚑgoᚑboilerplateᚋgraphᚋmodelᚐRegister(ctx, tmp)
+		arg0, err = ec.unmarshalORegisterInput2ᚖgithubᚗcomᚋLFSCamargoᚋgraphqlᚑgoᚑboilerplateᚋgraphᚋmodelᚐRegisterInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -407,7 +403,7 @@ func (ec *executionContext) _Mutation_register(ctx context.Context, field graphq
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().Register(rctx, args["input"].(*model.Register))
+		return ec.resolvers.Mutation().Register(rctx, args["input"].(*model.RegisterInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -686,41 +682,6 @@ func (ec *executionContext) _User_picture(ctx context.Context, field graphql.Col
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Picture, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _User_password(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "User",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Password, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1852,8 +1813,8 @@ func (ec *executionContext) unmarshalInputLoginInput(ctx context.Context, obj in
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputRegister(ctx context.Context, obj interface{}) (model.Register, error) {
-	var it model.Register
+func (ec *executionContext) unmarshalInputRegisterInput(ctx context.Context, obj interface{}) (model.RegisterInput, error) {
+	var it model.RegisterInput
 	var asMap = obj.(map[string]interface{})
 
 	for k, v := range asMap {
@@ -2033,11 +1994,6 @@ func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj
 			}
 		case "picture":
 			out.Values[i] = ec._User_picture(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "password":
-			out.Values[i] = ec._User_password(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -2617,11 +2573,11 @@ func (ec *executionContext) unmarshalOLoginInput2ᚖgithubᚗcomᚋLFSCamargoᚋ
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalORegister2ᚖgithubᚗcomᚋLFSCamargoᚋgraphqlᚑgoᚑboilerplateᚋgraphᚋmodelᚐRegister(ctx context.Context, v interface{}) (*model.Register, error) {
+func (ec *executionContext) unmarshalORegisterInput2ᚖgithubᚗcomᚋLFSCamargoᚋgraphqlᚑgoᚑboilerplateᚋgraphᚋmodelᚐRegisterInput(ctx context.Context, v interface{}) (*model.RegisterInput, error) {
 	if v == nil {
 		return nil, nil
 	}
-	res, err := ec.unmarshalInputRegister(ctx, v)
+	res, err := ec.unmarshalInputRegisterInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 

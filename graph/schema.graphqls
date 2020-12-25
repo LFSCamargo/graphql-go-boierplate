@@ -3,25 +3,29 @@ type User {
   username: String!
   email: String!
   picture: String!
-  password: String!
 }
-type Query {
-  me: User!
-}
-input Register {
+
+input RegisterInput {
   email: String!
   password: String!
   picture: String!
   username: String!
 }
+
 input LoginInput {
   email: String!
   password: String!
 }
+
 type TokenOutput {
   token: String!
 }
+
 type Mutation {
   login(input: LoginInput): TokenOutput
-  register(input: Register): TokenOutput
+  register(input: RegisterInput): TokenOutput
+}
+
+type Query {
+  me: User!
 }
