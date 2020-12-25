@@ -2,9 +2,8 @@
   <img src="https://github.com/graph-gophers/graphql-go/raw/master/docs/img/logo.png" />
   <br/>
   <h1>Go Lang GraphQL Boilerplate</h1>
+  <h3>This is my GraphQL Boilerplate for starters at Go and GraphQL </h3>
 </div>
-
-This is my GraphQL Boilerplate for starters at Go and GraphQL 
 
 # Why i created this?
 I was studying Go Lang and i did not found any great tutorial of how to build a simple GraphQL server with authentication and with password hashing
